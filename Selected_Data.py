@@ -95,11 +95,12 @@ class Customized_LIFE_BusDataset(Dataset):
         data_raw = pd.read_csv(csv_paths).fillna(0)
         data_raw = data_raw.drop(columns=['User_ID'])
 
-        similarities = self.Martix_similarity[id]
-        top_similar_indices = np.argsort(similarities)[-self.simi_number:-1]
+        similarities = self.Martix_similarity.iloc[self.id]
+        top_similar_indices = np.argsort(similarities)[-self.simi_number-1:-2]  #去掉了用户自己后的前10名
 
         # 从DataFrame中提取相似样本数据
         data_raw = data_raw.iloc[top_similar_indices]
+        # print(data_raw)
 
         numeric_columns = data_raw.select_dtypes(include='number').columns
 
@@ -156,3 +157,8 @@ class Customized_LIFE_BusDataset(Dataset):
         print(random_indices)
 
         return random_indices
+
+if __name__=='__main__':   #测试样例
+    csv_paths="定制公交_sample.csv"
+    Martix_similarity=pd.read_excel("data_coef.xlsx")
+    CLBus_DataSet=Customized_LIFE_BusDataset(csv_paths,Martix_similarity)
